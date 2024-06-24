@@ -16,10 +16,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <Link to="/">Home Page</Link>
           </li>
           <li className="bg-gray-200 p-2 rounded-xl hover:bg-gray-300">
-            <Link to="/product">Products List</Link>
+            <Link to="/products">Products List</Link>
           </li>
           <li className="bg-green-600 text-green-50 p-2 rounded-xl hover:bg-green-800">
-            <Link to="/product/create">Create New Product</Link>
+            <Link to="/products/create">Create New Product</Link>
           </li>
         </ul>
       </div>

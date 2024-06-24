@@ -1,20 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { HttpService } from "../services/http-service";
+import { ProductsListDTO } from "../dtos/product/products-list-dto";
 
-type ProductPageProps = {};
+type ProductsListPageProps = {};
 
-type ProductItem = {
-  id: string;
-  title: string;
-  price: number;
-  qty: number;
-};
 
-const ProductPage: React.FC<ProductPageProps> = ({}) => {
-  const [products, setProducts] = useState([] as ProductItem[]);
+const ProductsListPage: React.FC<ProductsListPageProps> = ({}) => {
+  const [products, setProducts] = useState([] as ProductsListDTO[]);
   useEffect(() => {
-    axios
-      .get<ProductItem[]>("http://localhost:3000/products")
+    HttpService
+      .get<ProductsListDTO[]>("products")
       .then(function (resp) {
         setProducts(resp.data);
       })
@@ -24,8 +20,9 @@ const ProductPage: React.FC<ProductPageProps> = ({}) => {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col">
       <h1 className="text-xl">Products List</h1>
+      <div className="  ">
       {products.map((item) => (
         <div className="m-2 p-2 border-2 rounded-lg">
           <h2>{item.title}</h2>
@@ -33,8 +30,10 @@ const ProductPage: React.FC<ProductPageProps> = ({}) => {
           <h3 className="font-bold">Qty in Stock: {item.qty}</h3>
         </div>
       ))}
+      </div>
+     
     </div>
   );
 };
 
-export default ProductPage;
+export default ProductsListPage;
