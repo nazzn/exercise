@@ -1,23 +1,39 @@
-import { useState } from "react";
-import { HttpService } from "../services/http-service";
-import { useNavigate } from "react-router-dom";
-import { CreateProductDTO } from "../dtos/product/create-product-dto";
+import { useEffect, useState } from "react";
+import { HttpService } from "../../services/http-service";
+import { useNavigate, useParams } from "react-router-dom";
+import { ProductsListDTO } from "../../dtos/product/products-list-dto";
+import { UpdateProductDTO } from "../../dtos/product/update-product-dto";
 
-type CreateProductPageProps = {};
-
-const CreateProductPage: React.FC<CreateProductPageProps> = ({}) => {
+const UpdateProductPage: React.FC = ({}) => {
   const navigate = useNavigate();
+  const params = useParams();
+
   const [product, setProduct] = useState({
     title: "",
     price: 0,
     qty: 0,
-  } as CreateProductDTO);
+  } as UpdateProductDTO);
 
   const numberRegexPattern : RegExp = /^[0-9\b]+$/;
 
+  useEffect(() => {
+    HttpService.get<ProductsListDTO>("products/" + params.id)
+      .then(function (resp) {
+        setProduct({
+            title: resp.data.title,
+            price: resp.data.price,
+            qty: resp.data.qty
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }, []);
+
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    HttpService.post("products", product)
+    HttpService.put("products/" +params.id, product)
       .then((resp) => {
         console.log(resp);
         navigate("/products");
@@ -30,21 +46,21 @@ const CreateProductPage: React.FC<CreateProductPageProps> = ({}) => {
 
   return (
     <div className="flex flex-col">
-      <h1 className="text-xl">Create Product</h1>
+      <h1 className="text-xl">ایجاد محصول جدید</h1>
       <form className="flex flex-col mx-2 my-4 gap-4" onSubmit={handleSubmit}>
         <div className="flex items-center w-[400px]">   
-          <label htmlFor="title">Title :</label>
+          <label htmlFor="title">عنوان محصول :</label>
           <input
             type="text"
             name="title"
             value={product.title}
             onChange={(e) => setProduct({ ...product, title: e.target.value })}
-            placeholder="please enter product title"
+            placeholder="لطفا عنوان محصول را وارد نمایید"
             className="border rounded-lg ms-2 flex-auto py-2 px-4"
           />
         </div>
         <div className="flex items-center w-[400px]">
-          <label htmlFor="price">Price :</label>
+          <label htmlFor="price">قیمت فروش :</label>
           <input
             type="text"
             name="price"
@@ -58,7 +74,7 @@ const CreateProductPage: React.FC<CreateProductPageProps> = ({}) => {
           />
         </div>
         <div className="flex items-center w-[400px]">
-          <label htmlFor="qty">Qty in Stock :</label>
+          <label htmlFor="qty">تعداد موجودی انبار :</label>
           <input
             type="text"
             name="qty"
@@ -76,13 +92,13 @@ const CreateProductPage: React.FC<CreateProductPageProps> = ({}) => {
             type="button"
             className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md text-gray-600 "
           >
-            Return to Products List
+            بازگشت به لیست محصولات
           </button>
           <button
             type="submit"
             className="p-2 bg-blue-600 hover:bg-blue-800 rounded-md text-blue-50 "
           >
-            Add New Product
+            ذخیره محصول
           </button>
         </div>
       </form>
@@ -90,4 +106,4 @@ const CreateProductPage: React.FC<CreateProductPageProps> = ({}) => {
   );
 };
 
-export default CreateProductPage;
+export default UpdateProductPage;
