@@ -8,6 +8,7 @@ import { AuthContext } from "../../contexts/auth-context";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAdd, faMinus, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { CartContext } from "../../contexts/cart-context/cart-context";
+import { log } from "console";
 type ProductsListPageProps = {};
 
 const ProductsListPage: React.FC<ProductsListPageProps> = ({}) => {
@@ -21,6 +22,7 @@ const ProductsListPage: React.FC<ProductsListPageProps> = ({}) => {
     HttpService.get<ProductsListDTO[]>("products")
       .then(function (resp) {
         setProducts(resp.data);
+        console.log(resp.data);
       })
       .catch(function (error) {
         console.log(error);
@@ -55,13 +57,34 @@ const ProductsListPage: React.FC<ProductsListPageProps> = ({}) => {
 
               <div className="flex-auto"></div>
               <div className="flex gap-2">
-                <button type="button" onClick={() => cartCtx.addToCart(item.id,item.qty)}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    cartCtx.addToCart(item.id, item.qty);
+                  }}
+                >
                   <FontAwesomeIcon icon={faAdd} />
                 </button>
-                <span>0</span>
-                <button>
-                  <FontAwesomeIcon icon={faMinus} />
-                </button>
+                <span>
+                  {
+                    (cartCtx.cartData.items.find(
+                      (itemInBasket) => itemInBasket.productID === item.id
+                    )?.requestedQty) as number > 0 && (cartCtx.cartData.items.find(
+                      (itemInBasket) => itemInBasket.productID === item.id
+                    )?.requestedQty) as number
+                  }
+                </span>
+                {(cartCtx.cartData.items.find(
+                  (itemInBasket) => itemInBasket.productID === item.id
+                )?.requestedQty) as number > 0 ? (
+                  <button onClick={() => {
+                    const requestedQty = cartCtx.cartData.items.find(
+                      (itemInBasket) => itemInBasket.productID === item.id
+                    )?.requestedQty as number;
+                    cartCtx.removeFromCart(item.id, requestedQty)}}>
+                    <FontAwesomeIcon icon={faMinus} />
+                  </button>
+                ) : null}
               </div>
             </div>
           </div>

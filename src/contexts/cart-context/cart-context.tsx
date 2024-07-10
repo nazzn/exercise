@@ -1,3 +1,4 @@
+import { log } from "console";
 import React, { createContext, useState } from "react";
 
 type CartItemType = {
@@ -12,7 +13,7 @@ type CartDataType = {
 export const CartContext = createContext({
     cartData: {} as CartDataType,
     addToCart: (id: string, currentQty: number)=>{},
-    removeFromCart: (productID:  string) => {},
+    removeFromCart: (productID:  string, requestedQty: number) => {},
     // getItemRequestedQty: (productID:  string) : number => 0
 })
 
@@ -49,10 +50,36 @@ const CartContextProvider : React.FC<{
             length: cartState.items.length
         })
 
-        console.log(cartState)
     }
 
-    const removeFromCartItems = (productID: string) => {
+    const removeFromCartItems = (productID: string, requestedQty: number) => {
+        
+        if (requestedQty < 0) return;
+
+        let exist = cartState.items.find(x => x.productID == productID)
+        
+        if(exist) {
+            let index = cartState.items.indexOf(exist);
+
+            const product = cartState.items.find(items => exist?.productID === items.productID)
+            console.log(product);
+            
+            if(requestedQty === 1) {
+                setCartState({
+                    items : cartState.items.splice(index, 1),
+                    length: cartState.items.length - 1
+                })
+                console.log(cartState.items);
+                
+            }else {
+                cartState.items[index].requestedQty -= 1;
+            }
+            
+        }
+        setCartState({
+            ...cartState,
+            length: cartState.items.length
+        })
 
     }
 
